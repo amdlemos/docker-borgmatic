@@ -1,14 +1,27 @@
 source_directories:
     - /mnt/source
 repositories:
-    - path: /mnt/borg-repository
-one_file_system: true
+    - path: ssh://lpp5t48m@lpp5t48m.repo.borgbase.com/./repo
+      label: magis_magismartech-web-data
+# one_file_system: true
 
 
 #   Passphrase is set in variable $BORG_PASSPHRASE
 #   encryption_passphrase: "DoNotMissToChangeYourPassphrase"
 compression: lz4
 archive_name_format: 'backup-{now}'
+
+# Passphrase to unlock the encryption key with. Only use on
+# repositories that were initialized with passphrase/repokey/keyfile
+# encryption. Quote the value if it contains punctuation, so it parses
+# correctly. And backslash any quote or backslash literals as well.
+# Defaults to not set.
+# encryption_passphrase: "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
+encryption_passphrase: ${BORG_PASSPHRASE}
+
+# Command to use instead of "ssh". This can be used to specify ssh
+# options. Defaults to not set.
+ssh_command: ssh -i /root/.ssh/borg
 
 
 keep_hourly: 2
