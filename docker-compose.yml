@@ -15,4 +15,13 @@ services:
       - TZ=${TZ}
       - BORG_PASSPHRASE=${BORG_PASSPHRASE}
       - BACKUP_CRON=${BACKUP_CRON}
+      - MAGISMARTECH_PASSWORD=${MAGISMARTECH_PASSWORD}
       # - BORG_REPO=${BORG_REPO}
+    networks:
+        - magis_default
+        - default
+networks:
+  default:
+    driver: bridge
+  magis_default:
+    external: true
