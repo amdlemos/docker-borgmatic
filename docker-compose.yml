@@ -15,7 +15,7 @@ services:
       - TZ=${TZ}
       - BORG_PASSPHRASE=${BORG_PASSPHRASE}
       - BACKUP_CRON=${BACKUP_CRON}
-      - MAGISMARTECH_PASSWORD=${MAGISMARTECH_PASSWORD}
+      - TECFUND_PASSWORD=${TECFUND_PASSWORD}
       # - BORG_REPO=${BORG_REPO}
     networks:
         - magis_default
