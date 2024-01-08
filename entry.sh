@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/bin/bash
+
+
 
 # Path
 CRONTAB_PATH="/etc/borgmatic.d/crontab.txt"
@@ -22,7 +24,6 @@ fi
 
 # Loop through all environment variables that start with 'BORG'.
 for var_name in $(set | grep '^BORG' | awk -F= '{print $1}'); do
-  # Retrieve the current value of each environment variable.
   var_value=$(eval echo \$$var_name)
 
   # Check if the variable's name ends with '_FILE'.
@@ -53,6 +54,7 @@ for var_name in $(set | grep '^BORG' | awk -F= '{print $1}'); do
     fi
   fi
 done
+
 
 # Enable final debug logging based on the DEBUG_SECRETS environment variable.
 # Logs the final values of BORG_PASSPHRASE and BORG_PASSPHRASE_FILE.
@@ -95,9 +97,11 @@ if [ $# -eq 0 ]; then
 else
   if [ "$1" = "bash" ] || [ "$1" = "sh" ] || [ "$1" = "/bin/bash" ] || [ "$1" = "/bin/sh" ]; then
     # Run Shell
+    source /env_secrets_expand.sh
     exec "$@"
   else
     # Run borgmatic with subcommand
+    source /env_secrets_expand.sh
     exec borgmatic "$@"
   fi
 fi

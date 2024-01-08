@@ -32,10 +32,13 @@ RUN apk add --update --no-cache \
     /var/cache/apk/* \
     /.cache
 
-COPY --chmod=755 entry.sh /entry.sh
 COPY requirements.txt /
 
 RUN python3 -m pip install --no-cache -Ur requirements.txt
 RUN borgmatic --bash-completion > /usr/share/bash-completion/completions/borgmatic && echo "source /etc/bash/bash_completion.sh" > /root/.bashrc
+
+COPY --chmod=755 entry.sh /entry.sh
+COPY --chmod=755 env_secrets_expand.sh /env_secrets_expand.sh
+RUN echo "source /env_secrets_expand.sh" >> /root/.bashrc
 
 ENTRYPOINT ["/entry.sh"]

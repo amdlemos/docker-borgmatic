@@ -1,27 +1,50 @@
-version: '3'
+version: '3.8'
 services:
   borgmatic:
-    image: ghcr.io/borgmatic-collective/borgmatic
-    container_name: borgmatic
+    image: 127.0.0.1:5000/borgmatic-custom
+    build:
+      context: ./
+      dockerfile: Dockerfile
     volumes:
-      - ${VOLUME_SOURCE}:/mnt/source:ro            # backup source
-      - ${VOLUME_ETC_BORGMATIC}:/etc/borgmatic.d/  # borgmatic config file(s) + crontab.txt
-      - ${VOLUME_BORG_CONFIG}:/root/.config/borg   # config and keyfiles
-      - ${VOLUME_SSH}:/root/.ssh                   # ssh key for remote repositories
-      - ${VOLUME_BORG_CACHE}:/root/.cache/borg     # checksums used for deduplication
+      - /home/alan/magis:/mnt/docker-compose:ro # Project
+      - /var/lib/docker/volumes/magis_magismartech-web-data:/mnt/source:ro # backup source
+      - /var/lib/docker/volumes/magis_magismartech-web-data:/mnt/web-data:ro # Volume 1
+      - /var/lib/docker/volumes/magis_magismartech-database:/mnt/postgres-data:ro # Volume 2    
+      - ./data/borgmatic.d:/etc/borgmatic.d/  # borgmatic config file(s) + crontab.txt
+      - ./data/.config/borg:/root/.config/borg   # config and keyfiles
+      - ./data/.ssh:/root/.ssh                   # ssh key for remote repositories
+      - ./data/.cache/borg:/root/.cache/borg     # checksums used for deduplication
       # - ${VOLUME_TARGET}:/mnt/borg-repository      # backup target
       # - ${VOLUME_BORGMATIC_STATE}:/root/.borgmatic # borgmatic state files
     environment:
-      - TZ=${TZ}
-      - BORG_PASSPHRASE=${BORG_PASSPHRASE}
-      - BACKUP_CRON=${BACKUP_CRON}
-      - MAGISMARTECH_PASSWORD=${MAGISMARTECH_PASSWORD}
+      TZ: America/Sao_Paulo
+      BACKUP_CRON: /backup_cron
+      DEBUG_SECRETS: "true"
+      BORG_PASSPHRASE: DOCKER-SECRET->borg_passphrase
+      MAGISMARTECH_PASSWORD: DOCKER-SECRET->magismartech_password
       # - BORG_REPO=${BORG_REPO}
     networks:
         - magis_default
-        - default
+    configs:
+      - backup_cron
+      - tz
+    secrets:
+      - borg_passphrase
+      - magismartech_password
+
+configs:
+  backup_cron:
+    external: true
+  tz:
+    external: true
+
+secrets:
+  borg_passphrase:
+    external: true
+  magismartech_password: 
+    external: true
+
 networks:
-  default:
-    driver: bridge
   magis_default:
+    driver: overlay
     external: true
